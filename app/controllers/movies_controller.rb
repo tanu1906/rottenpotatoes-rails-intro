@@ -17,12 +17,12 @@ class MoviesController < ApplicationController
     
     # filter  movies based on ratings checked on check box
     if params[:ratings] 
-      @ratings_checked = params[:ratings].keys
+      @ratings_marked = params[:ratings].keys
     else
-      @ratings_checked = @all_ratings
+      @ratings_marked = @all_ratings
     end
     
-    @movies = Movie.where(rating: @ratings_checked)
+    @movies = Movie.where(rating: @ratings_marked)
    
     #sorting by movie title or release date
    
