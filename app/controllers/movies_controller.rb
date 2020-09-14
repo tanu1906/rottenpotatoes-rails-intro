@@ -11,35 +11,23 @@ class MoviesController < ApplicationController
   end
 
   def index
-    session[:ratings] = nil
-    #@movies = Movie.all
-    @all_ratings = Movie.all_rating
     
-    if params[:ratings]
+    @movies = Movie.all
+    @all_ratings = Movie.all_rating   #put all the unique ratings into this instance variable
+    
+    # filter  movies based on ratings checked on check box
+    if params[:ratings] 
       @ratings_checked = params[:ratings].keys
     else
-      if session[:ratings]
-        @ratings_checked = session[:ratings]
-      else
-        @ratings_checked = @all_ratings
-      end
+      @ratings_checked = @all_ratings
     end
     
-    if @ratings_checked!=session[:ratings]
-      session[:ratings] = @ratings_checked
-    end
+    @movies = Movie.where(rating: @ratings_checked)
+   
+    #sorting by movie title or release date
+   
+    @sort_movies = params[:sort_by] if params[:sort_by]
     
-    
-    if (session[:ratings] == nil)
-      @movies = Movie.all
-    else
-      @movies = Movie.where(rating: @ratings_checked) # Filtering based on ratings stored in session
-    end
-    
-    #sorting
-    if params[:sort_by]
-      @sort_movies = params[:sort_by]
-    end
     if @sort_movies == 'title'
       @movies = Movie.order(@sort_movies)
       @title_header = 'hilite'
@@ -49,14 +37,6 @@ class MoviesController < ApplicationController
     end
 
     
-    # @movies = Movie.order(params[:sort_by])
-    # if params[:sort_by] == 'title'
-    #   @title_header = 'hilite'
-    # elsif params[:sort_by] == 'release_date'
-    #   @release_date_header = 'hilite'
-    # end
-    
-
   end
 
   def new
