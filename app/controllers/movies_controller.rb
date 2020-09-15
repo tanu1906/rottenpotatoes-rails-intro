@@ -13,29 +13,28 @@ class MoviesController < ApplicationController
   def index
     
     @movies = Movie.all
-    @all_ratings = Movie.all_rating   #put all the unique ratings into this instance variable
+    @all_ratings = Movie.all_movie_ratings   #put all the unique ratings into this instance variable
     
     # filter  movies based on ratings checked on check box
     if params[:ratings] 
-      @ratings_marked = params[:ratings].keys
+      @marked_ratings = params[:ratings]
     else
-      @ratings_marked = @all_ratings
+      @marked_ratings = Hash[@all_ratings.collect {|rating| [rating, rating]}]
     end
     
-    @movies = Movie.where(rating: @ratings_marked)
+    @movies = Movie.where(rating: @marked_ratings.keys)
    
     #sorting by movie title or release date
    
-    @sort_movies = params[:sort_by] if params[:sort_by]
+    @sort_movie = params[:sort_by] if params[:sort_by]
     
-    if @sort_movies == 'title'
-      @movies = Movie.order(@sort_movies)
-      @title_header = 'hilite'
-    elsif @sort_movies == 'release_date'
-      @movies = Movie.order(@sort_movies)
-      @release_date_header = 'hilite'
+    if @sort_movie == 'title'
+      @movies = @movies.order(@sort_movie)
+    elsif @sort_movie == 'release_date'
+      @movies = @movies.order(@sort_movie)
     end
 
+    
     
   end
 

@@ -1,7 +1,6 @@
 class Movie < ActiveRecord::Base
-    def self.all_rating
-        self.all.select(:rating).distinct.pluck(:rating)
-    end
-    
-    
+  #attr_accessible :title, :rating, :description, :release_date
+  def self.all_movie_ratings
+    Movie.select(:rating).distinct.inject([]) { |a, m| a.push m.rating }
+  end
 end
