@@ -11,31 +11,43 @@ class MoviesController < ApplicationController
   end
 
   def index
-    
-    @movies = Movie.all
-    @all_ratings = Movie.all_movie_ratings   #put all the unique ratings into this instance variable
-    
-    # filter  movies based on ratings checked on check box
-    if params[:ratings] 
+   
+    @all_ratings = Movie.all_movie_ratings #stores all the unique ratings of movies
+
+    #check and store user input to sort, and if remembered values not nil then store the remebered value for further use.
+    if params[:sort_by] 
+       @sort_movie = params[:sort_by]
+    elsif session[:sort_by] 
+       @sort_movie = session[:sort_by]
+    end
+
+    #check and store user input for selected ratings or remebered ratings or all
+    if(params[:ratings])
       @marked_ratings = params[:ratings]
+    elsif(session[:ratings])
+      @marked_ratings = session[:ratings]
     else
       @marked_ratings = Hash[@all_ratings.collect {|rating| [rating, rating]}]
     end
+
+   # When user switches to other page
+    if params[:sort_by]!=session[:sort_by] or params[:ratings]!=session[:ratings]
+      session[:sort_by] = @sort_movie
+      session[:ratings] = @marked_ratings
+      flash.keep
+      redirect_to movies_path(sort_by: session[:sort_by],ratings: session[:ratings])
+    end	 
     
     @movies = Movie.where(rating: @marked_ratings.keys)
-   
-    #sorting by movie title or release date
-   
-    @sort_movie = params[:sort_by] if params[:sort_by]
     
-    if @sort_movie == 'title'
+    # Sorting based on the user input 
+   
+    if(@sort_movie == 'title')
       @movies = @movies.order(@sort_movie)
-    elsif @sort_movie == 'release_date'
+    elsif (@sort_movie == 'release_date')
       @movies = @movies.order(@sort_movie)
     end
-
-    
-    
+  
   end
 
   def new
